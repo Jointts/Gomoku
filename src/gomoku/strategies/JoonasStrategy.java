@@ -25,20 +25,29 @@ public class JoonasStrategy implements ComputerStrategy {
         Location lastCoordinate = coordinates.get(coordinates.size() - 1);
         switch (direction){
             case "cols":
-                if(board[firstCoordinate.getRow()][firstCoordinate.getColumn() - 1] == SimpleBoard.EMPTY){
-                    return new LocationType(firstCoordinate.getRow(), firstCoordinate.getColumn() - 1, false);
-                }
-                if(board[lastCoordinate.getRow()][lastCoordinate.getColumn() + 1] == SimpleBoard.EMPTY){
-                    return new LocationType(lastCoordinate.getRow(), lastCoordinate.getColumn() + 1, false);
+                try{
+                    if(board[firstCoordinate.getRow()][firstCoordinate.getColumn() - 1] == SimpleBoard.EMPTY){
+                        return new LocationType(firstCoordinate.getRow(), firstCoordinate.getColumn() - 1, false);
+                    }
+                    if(board[lastCoordinate.getRow()][lastCoordinate.getColumn() + 1] == SimpleBoard.EMPTY){
+                        return new LocationType(lastCoordinate.getRow(), lastCoordinate.getColumn() + 1, false);
+                    }
+                }catch(ArrayIndexOutOfBoundsException e){
+                    return randomMove();
                 }
                 return randomMove();
             case "rows":
-                if(board[firstCoordinate.getRow() - 1][firstCoordinate.getColumn()] == SimpleBoard.EMPTY){
-                    return new LocationType(firstCoordinate.getRow() - 1, firstCoordinate.getColumn(), false);
+                try{
+                    if(board[firstCoordinate.getRow() - 1][firstCoordinate.getColumn()] == SimpleBoard.EMPTY){
+                        return new LocationType(firstCoordinate.getRow() - 1, firstCoordinate.getColumn(), false);
+                    }
+                    if(board[lastCoordinate.getRow() + 1][lastCoordinate.getColumn()] == SimpleBoard.EMPTY){
+                        return new LocationType(lastCoordinate.getRow() + 1, lastCoordinate.getColumn(), false);
+                    }
+                }catch(ArrayIndexOutOfBoundsException e){
+                    return randomMove();
                 }
-                if(board[lastCoordinate.getRow() + 1][lastCoordinate.getColumn()] == SimpleBoard.EMPTY){
-                    return new LocationType(lastCoordinate.getRow() + 1, lastCoordinate.getColumn(), false);
-                }
+                return randomMove();
             default:
                 return randomMove();
         }
