@@ -22,15 +22,19 @@ public class JoonasStrategy implements ComputerStrategy {
         // let's operate on 2-d array
         //  lets not, i dont like arrays
         this.board = board.getBoard();
-
-        if(!initalized){
-            getPlayerTiles();
-            initalized = true;
-        }
-        if(calculateMin().getBestScore() > calculateMax().getBestScore()){
+        try{
+            if(!initalized){
+                getPlayerTiles();
+                initalized = true;
+            }
+            if(calculateMax().getBestScore() >= calculateMin().getBestScore()){
+                return calculateMax().getMove();
+            }
             return calculateMin().getMove();
+        }catch (IllegalArgumentException e){
+            return randomMove().getCoordinate();
         }
-        return calculateMax().getMove();
+
     }
 
     private void getPlayerTiles(){
@@ -96,7 +100,7 @@ public class JoonasStrategy implements ComputerStrategy {
         BestCoordinate rowsBestCoordinates = evaluateRows(opponent);
         //  To get the best in row score
         //  To get the best in row possible move, random if not available
-        if(columnsBestCoordinates.getBestScore() > rowsBestCoordinates.getBestScore()){
+        if(columnsBestCoordinates.getBestScore() >= rowsBestCoordinates.getBestScore()){
             return columnsBestCoordinates;
         }else{
             return rowsBestCoordinates;
@@ -108,7 +112,7 @@ public class JoonasStrategy implements ComputerStrategy {
         BestCoordinate rowsBestCoordinates = evaluateRows(me);
         //  To get the best in row score
         //  To get the best in row possible move, random if not available
-        if(columnsBestCoordinates.getBestScore() > rowsBestCoordinates.getBestScore()){
+        if(columnsBestCoordinates.getBestScore() >= rowsBestCoordinates.getBestScore()){
             return columnsBestCoordinates;
         }else{
             return rowsBestCoordinates;
@@ -117,10 +121,10 @@ public class JoonasStrategy implements ComputerStrategy {
 
     private BestCoordinate evaluateRows(int player){
         int highest = 0;
-        Location move = new Location(0, 0);
         List<Location> highestCoordinates = new ArrayList<>();
         List<Location> currentCoordinates = new ArrayList<>();
         int score = 0;
+        Location move = randomMove().getCoordinate();
         for (int col = 0; col < board.length; col++) {
             for (int row = 0; row < board[0].length; row++) {
                 if (board[row][col] == player) {
@@ -149,10 +153,10 @@ public class JoonasStrategy implements ComputerStrategy {
 
     private BestCoordinate evaluateColumns(int player){
         int highest = 0;
-        Location move = new Location(0, 0);
         List<Location> highestCoordinates = new ArrayList<>();
         List<Location> currentCoordinates = new ArrayList<>();
         int score = 0;
+        Location move = randomMove().getCoordinate();
         for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board[0].length; col++) {
                 if (board[row][col] == player) {
