@@ -20,36 +20,72 @@ public class JoonasStrategy implements ComputerStrategy {
     }
 
     private LocationType checkPossibleMoves(BestCoordinate bestCoordinate, String direction){
+        List<Location> coordinates = bestCoordinate.getBestCoordinates();
+        Location firstCoordinate = coordinates.get(0);
+        Location lastCoordinate = coordinates.get(coordinates.size() - 1);
         switch (direction){
             case "cols":
-                List<Location> coordinates = bestCoordinate.getBestCoordinates();
-                Location leftMostCoordinate = coordinates.get(0);
-                Location rightMostCoordinate = coordinates.get(coordinates.size() - 1);
-                if(board[leftMostCoordinate.getRow()][leftMostCoordinate.getColumn() - 1] == SimpleBoard.EMPTY){
-                    return new LocationType(leftMostCoordinate.getRow(), leftMostCoordinate.getColumn() - 1, false);
+                if(board[firstCoordinate.getRow()][firstCoordinate.getColumn() - 1] == SimpleBoard.EMPTY){
+                    return new LocationType(firstCoordinate.getRow(), firstCoordinate.getColumn() - 1, false);
                 }
-                if(board[rightMostCoordinate.getRow()][rightMostCoordinate.getColumn() + 1] == SimpleBoard.EMPTY){
-                    return new LocationType(rightMostCoordinate.getRow(), rightMostCoordinate.getColumn() + 1, false);
+                if(board[lastCoordinate.getRow()][lastCoordinate.getColumn() + 1] == SimpleBoard.EMPTY){
+                    return new LocationType(lastCoordinate.getRow(), lastCoordinate.getColumn() + 1, false);
                 }
                 return randomMove();
+            case "rows":
+                if(board[firstCoordinate.getRow() - 1][firstCoordinate.getColumn()] == SimpleBoard.EMPTY){
+                    return new LocationType(firstCoordinate.getRow() - 1, firstCoordinate.getColumn(), false);
+                }
+                if(board[lastCoordinate.getRow() + 1][lastCoordinate.getColumn()] == SimpleBoard.EMPTY){
+                    return new LocationType(lastCoordinate.getRow() + 1, lastCoordinate.getColumn(), false);
+                }
             default:
                 return randomMove();
         }
     }
 
     private Location calculateMin(){
-        BestCoordinate columnsBestCoordinates = evaluateColumns(board);
+        BestCoordinate columnsBestCoordinates = evaluateColumns();
+        BestCoordinate rowsBestCoordinates = evaluateRows();
         //  To get the best in row score
-        columnsBestCoordinates.getBestScore();
+        rowsBestCoordinates.getBestScore();
         //  To get the best in row possible move, random if not available
-        return columnsBestCoordinates.getMove();
+        return rowsBestCoordinates.getMove();
     }
 
-    public int evaluateRows(){
-        return 1;
+    private BestCoordinate evaluateRows(){
+        int highest = 0;
+        Location move = new Location(0, 0);
+        List<Location> highestCoordinates = new ArrayList<>();
+        List<Location> currentCoordinates = new ArrayList<>();
+        int score = 0;
+        for (int col = 0; col < board.length; col++) {
+            for (int row = 0; row < board[0].length; row++) {
+                if (board[row][col] == SimpleBoard.PLAYER_WHITE) {
+                    score+=1;
+                    currentCoordinates.add(new Location(row, col));
+                    System.out.println("Score is " + score);
+                }else{
+                    currentCoordinates = new ArrayList<>();
+                    score = 0;
+                }
+                if(score > highest){
+                    BestCoordinate coordinateToCheck = new BestCoordinate(currentCoordinates, score);
+                    LocationType customLocation = checkPossibleMoves(coordinateToCheck, "rows");
+                    if(!customLocation.isRandom()){
+                        highestCoordinates = currentCoordinates;
+                        highest = score;
+                        move = customLocation.getCoordinate();
+                    }
+                }
+            }
+        }
+        BestCoordinate bestCoordinate = new BestCoordinate(highestCoordinates, highest);
+        bestCoordinate.setMove(move);
+        return bestCoordinate;
     }
 
-    private BestCoordinate evaluateColumns(int [][] board){
+    private BestCoordinate evaluateColumns(){
         int highest = 0;
         Location move = new Location(0, 0);
         List<Location> highestCoordinates = new ArrayList<>();
