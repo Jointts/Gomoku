@@ -57,9 +57,12 @@ public class JoonasStrategy implements ComputerStrategy {
         BestCoordinate columnsBestCoordinates = evaluateColumns();
         BestCoordinate rowsBestCoordinates = evaluateRows();
         //  To get the best in row score
-        rowsBestCoordinates.getBestScore();
         //  To get the best in row possible move, random if not available
-        return rowsBestCoordinates.getMove();
+        if(columnsBestCoordinates.getBestScore() > rowsBestCoordinates.getBestScore()){
+            return columnsBestCoordinates.getMove();
+        }else{
+            return rowsBestCoordinates.getMove();
+        }
     }
 
     private BestCoordinate evaluateRows(){
